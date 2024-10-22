@@ -4,7 +4,7 @@ import React, { useState, useCallback, useRef } from 'react'
 import { GoogleMap, useJsApiLoader, Marker, InfoWindow } from '@react-google-maps/api'
 import { Search } from 'lucide-react'
 
-const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || 'AIzaSyBlLUjd6-b5hc3q9ifFhS4LWQWOMSzr_Js'
+const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ''
 
 // Sample location data
 const locations = [
