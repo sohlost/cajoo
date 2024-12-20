@@ -73,7 +73,7 @@ export default function MapPlatform() {
     setMap(mapInstance)
   }, [])
 
-  const onUnmount = useCallback((mapInstance: google.maps.Map) => {
+  const onUnmount = useCallback(() => {
     setMap(null)
   }, [])
 

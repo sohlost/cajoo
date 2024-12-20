@@ -52,7 +52,13 @@ export async function GET(request: Request) {
     // The response structure may vary. Typically, you would extract the model output.
     // Adjust this according to the actual Perplexity API response format.
     // Let's assume perplexityData contains an array of choices, each with a message.content
-    const results = perplexityData?.choices?.map((choice: any) => choice.message?.content) || []
+    interface Choice {
+      message: {
+        content: string;
+      };
+    }
+
+    const results = perplexityData?.choices?.map((choice: Choice) => choice.message.content) || []
 
     return NextResponse.json({ results })
   } catch (error) {
