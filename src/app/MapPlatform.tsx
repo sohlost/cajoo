@@ -1,10 +1,12 @@
+// components/MapPlatform.tsx
+
 'use client'
 
-import React, { useState, useCallback, useRef } from 'react'
+import React, { useState, useCallback, useRef, useEffect } from 'react'
 import { GoogleMap, useJsApiLoader, Marker, InfoWindow } from '@react-google-maps/api'
 import { Search } from 'lucide-react'
 
-const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || 'AIzaSyBlLUjd6-b5hc3q9ifFhS4LWQWOMSzr_Js'
+const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY 
 
 // Sample location data
 const locations = [
@@ -18,8 +20,8 @@ const mapContainerStyle = {
   height: '100vh'
 }
 
-// Coordinates for Vasco Da Gama, Goa
-const center = {
+// Default center if geolocation is not available/fails
+const defaultCenter = {
   lat: 15.3838,
   lng: 73.8578
 }
@@ -36,14 +38,36 @@ const mapOptions: google.maps.MapOptions = {
 export default function MapPlatform() {
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
-    googleMapsApiKey: GOOGLE_MAPS_API_KEY
+    googleMapsApiKey: GOOGLE_MAPS_API_KEY || ''
   })
 
   const [map, setMap] = useState<google.maps.Map | null>(null)
+  const [center, setCenter] = useState(defaultCenter)
   const [selectedLocation, setSelectedLocation] = useState<typeof locations[0] | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
+  const [searchResults, setSearchResults] = useState<string[]>([]) // Store array of search results
+  const [isLoading, setIsLoading] = useState(false) // Loading state
 
   const searchInputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    // Attempt to get user's current location
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords
+          setCenter({ lat: latitude, lng: longitude })
+          if (map) {
+            map.setCenter({ lat: latitude, lng: longitude })
+          }
+        },
+        (error) => {
+          console.error('Error getting current location:', error)
+          // Fallback to default center if geolocation fails
+        }
+      )
+    }
+  }, [map])
 
   const onLoad = useCallback((mapInstance: google.maps.Map) => {
     setMap(mapInstance)
@@ -61,15 +85,42 @@ export default function MapPlatform() {
     setSearchQuery(e.target.value)
   }
 
-  const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSearchSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     console.log('Searching for:', searchQuery)
-  }
 
-  // Filter locations based on search query
-  const filteredLocations = locations.filter(location =>
-    location.name.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+    if (!searchQuery.trim()) {
+      setSearchResults([])
+      return
+    }
+
+    setIsLoading(true)
+    setSearchResults([]) // Clear previous results
+
+    try {
+      const response = await fetch(`/api/search?query=${encodeURIComponent(searchQuery)}`, {
+        method: 'GET',
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      const data = await response.json()
+
+      // Ensure 'results' is an array
+      if (Array.isArray(data.results)) {
+        setSearchResults(data.results)
+      } else {
+        setSearchResults([data.results])
+      }
+    } catch (error) {
+      console.error('Error fetching search results:', error)
+      setSearchResults(['An error occurred while fetching search results.'])
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   return isLoaded ? (
     <div className="relative w-screen h-screen">
@@ -81,7 +132,7 @@ export default function MapPlatform() {
         onLoad={onLoad}
         onUnmount={onUnmount}
       >
-        {filteredLocations.map((location) => (
+        {locations.map((location) => (
           <Marker
             key={location.id}
             position={location.position}
@@ -102,8 +153,10 @@ export default function MapPlatform() {
         )}
       </GoogleMap>
 
-      {/* Search Bar in Top Left Corner */}
-      <div className="absolute top-4 left-4 z-10 w-full max-w-md px-4">
+      {/* Centered Search Bar */}
+      <div 
+        className="absolute top-4 left-1/2 z-10 w-full max-w-md px-4 transform -translate-x-1/2"
+      >
         <form onSubmit={handleSearchSubmit} className="flex items-center bg-white rounded-full shadow-lg overflow-hidden">
           <button
             type="button"
@@ -119,10 +172,28 @@ export default function MapPlatform() {
             value={searchQuery}
             onChange={handleSearchChange}
             placeholder="Search locations..."
-            className="flex-grow px-4 py-2 focus:outline-none"
+            className="flex-grow px-4 py-2 focus:outline-none text-black"
             aria-label="Search locations"
           />
         </form>
+
+        {/* Display search results in a new box if available */}
+        {isLoading && (
+          <div className="mt-4 p-4 bg-white rounded shadow-lg max-h-60 overflow-y-auto text-black">
+            <p>Loading search results...</p>
+          </div>
+        )}
+
+        {searchResults.length > 0 && !isLoading && (
+          <div className="mt-4 p-4 bg-white rounded shadow-lg max-h-60 overflow-y-auto text-black">
+            <h3 className="font-bold mb-2">Search Results:</h3>
+            <ul className="list-disc list-inside">
+              {searchResults.map((result, idx) => (
+                <li key={idx}>{result}</li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     </div>
   ) : (
