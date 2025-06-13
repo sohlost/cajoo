@@ -5,6 +5,7 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react'
 import { GoogleMap, useJsApiLoader, Marker, InfoWindow } from '@react-google-maps/api'
 import { Search, X } from 'lucide-react'
+import Image from 'next/image'
 
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ''
 
@@ -188,7 +189,13 @@ export default function MapPlatform() {
 
       // Use geocoded places from Google Maps API
       if (data.places && Array.isArray(data.places)) {
-        const markers: MarkerType[] = data.places.map((place: any, idx: number) => {
+        const markers: MarkerType[] = data.places.map((place: {
+          name?: string;
+          lat: number;
+          lng: number;
+          address?: string;
+          rating?: number;
+        }, idx: number) => {
           let description = place.address || 'Location found'
           if (place.rating) {
             description += `\n⭐ Rating: ${place.rating}/5`
@@ -298,9 +305,11 @@ export default function MapPlatform() {
             {isSearchExpanded ? (
               <Search className="w-6 h-6" />
             ) : (
-              <img 
+              <Image 
                 src="/favicon.ico" 
                 alt="Search" 
+                width={56}
+                height={56}
                 className="w-full h-full object-cover rounded-full"
               />
             )}

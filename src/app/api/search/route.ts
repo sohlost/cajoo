@@ -163,15 +163,15 @@ function isGenericText(text: string): boolean {
   return genericWords.test(text.trim())
 }
 
-// Helper function to check for location keywords
-function hasLocationKeywords(text: string): boolean {
-  return /(?:Pune|Mumbai|Delhi|Bangalore|Chennai|Hyderabad|Kolkata|Ahmedabad|Baner|Koregaon|Wakad|Hinjewadi|Viman Nagar|Kharadi|Magarpatta|Aundh|Shivaji Nagar|Mall|Complex|Tower|Building|Center|Centre|Park|Garden|Market|Station|Airport|Fort|Palace|Temple|Mandir|Museum|Ashram|Cave|Zoo|Zoological)/i.test(text)
-}
+// Helper function to check for location keywords (currently unused but kept for future use)
+// function hasLocationKeywords(text: string): boolean {
+//   return /(?:Pune|Mumbai|Delhi|Bangalore|Chennai|Hyderabad|Kolkata|Ahmedabad|Baner|Koregaon|Wakad|Hinjewadi|Viman Nagar|Kharadi|Magarpatta|Aundh|Shivaji Nagar|Mall|Complex|Tower|Building|Center|Centre|Park|Garden|Market|Station|Airport|Fort|Palace|Temple|Mandir|Museum|Ashram|Cave|Zoo|Zoological)/i.test(text)
+// }
 
-// Helper function to check for business keywords
-function hasBusinessKeywords(text: string): boolean {
-  return /(?:Restaurant|Cafe|Hotel|Hospital|School|College|Office|Shop|Store|Bank|ATM|Gym|Spa|Salon|Theatre|Cinema|Club|Bar|Pub|Pharmacy|Medical|Clinic|Temple|Mandir|Museum|Fort|Palace|Garden|Park|Zoo|Ashram|Cave)/i.test(text)
-}
+// Helper function to check for business keywords (currently unused but kept for future use)
+// function hasBusinessKeywords(text: string): boolean {
+//   return /(?:Restaurant|Cafe|Hotel|Hospital|School|College|Office|Shop|Store|Bank|ATM|Gym|Spa|Salon|Theatre|Cinema|Club|Bar|Pub|Pharmacy|Medical|Clinic|Temple|Mandir|Museum|Fort|Palace|Garden|Park|Zoo|Ashram|Cave)/i.test(text)
+// }
 
 // Helper function to check if coordinates are in India
 function isInIndia(lat: number, lng: number): boolean {
