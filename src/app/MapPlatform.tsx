@@ -288,7 +288,7 @@ export default function MapPlatform() {
 
       {/* Search Interface */}
       <div className={`absolute left-1/2 transform -translate-x-1/2 z-10 transition-all duration-500 ease-in-out ${
-        showResults ? 'top-6' : 'bottom-6'
+        showResults ? 'top-6' : 'bottom-20 md:bottom-6'
       }`}>
         <div className="flex items-center gap-4">
           {/* Circular Search Button */}
