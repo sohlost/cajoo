@@ -40,7 +40,7 @@ async function getLocationDescription(lat: string, lng: string): Promise<string>
       }
       
       // Build a general location string
-      let locationParts = []
+      const locationParts = []
       
       // For areas like "Baner" or "Koregaon Park", use the area
       if (area && !area.toLowerCase().includes('ward') && !area.toLowerCase().includes('division')) {
@@ -110,7 +110,7 @@ async function geocodePlaces(searchResults: string[], userLat: string, userLng: 
 
       try {
         // First try Google Geocoding API (better for addresses)
-        let geocodingResult = await tryGeocoding(location, apiKey)
+        const geocodingResult = await tryGeocoding(location, apiKey)
         
         if (geocodingResult) {
           placesWithCoords.push(geocodingResult)
@@ -118,7 +118,7 @@ async function geocodePlaces(searchResults: string[], userLat: string, userLng: 
         }
 
         // If geocoding fails, try Places API (better for business names)
-        let placesResult = await tryPlacesSearch(location, userLat, userLng, apiKey)
+        const placesResult = await tryPlacesSearch(location, userLat, userLng, apiKey)
         
         if (placesResult) {
           placesWithCoords.push(placesResult)
