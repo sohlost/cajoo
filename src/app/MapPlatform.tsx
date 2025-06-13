@@ -230,7 +230,6 @@ export default function MapPlatform() {
     setSearchResults([])
     setSearchQuery('')
     setIsSearchExpanded(false)
-    setSearchMarkers([]) // Clear search markers from map
   }
 
   return isLoaded ? (
